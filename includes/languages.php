@@ -42,7 +42,7 @@ function i18n_merge( $language = null ) : bool {
     if ( is_null($language) ) { # Initial (re)loading of language into $i18n - Allow overwrite
         $i18n = array(); // Reset array to empty
         if ( isFile($LANG, LANGPATH, '.lang.php')){
-            include ( tsl(LANGPATH) . $LANG . ".lang.php" );
+            include ( LANGPATH . $LANG . ".lang.php" );
             foreach ( $translations as $key => $value ) {
                 $i18n[ $key ] = $value;
             }
@@ -50,7 +50,7 @@ function i18n_merge( $language = null ) : bool {
         }
     } else { # Merge additional language keys - No overwriting
         if ( isFile($language, LANGPATH, '.lang.php')){
-            include ( tsl(LANGPATH) . $language . ".lang.php" );
+            include ( LANGPATH . $language . ".lang.php" );
             foreach ( $translations as $key => $value ) {
                 if ( array_key_exists( $key, $i18n ) == false ) {
                     $i18n[ $key ] = $value;
@@ -84,15 +84,15 @@ if ( !isset( $i18n ) ) { $i18n = array(); global $i18n; }
 i18n_merge( null ); // Load $LANG file into $i18n
 
 // Merge in default lang to avoid empty lang tokens
-if ( MERGELANG !== false ) {
-    if ( ( MERGELANG === true ) && ( isFile("en-AU", LANGPATH, '.lang.php') ) ) {
+if ( $CONFIG['languages']['mergelang'] !== false ) {
+    if ( ( $CONFIG['languages']['mergelang'] === true ) && ( isFile("en-AU", LANGPATH, '.lang.php') ) ) {
         # Merge the default language file
         i18n_merge( "en-AU" );
     } elseif (
-        ( !is_bool(MERGELANG) ) &&  ( MERGELANG != $LANG ) &&
-        ( isFile( MERGELANG, LANGPATH, ".lang.php" ) )
+        ( !is_bool($CONFIG['languages']['mergelang']) ) &&  ( $CONFIG['languages']['mergelang'] != $LANG ) &&
+        ( isFile( $CONFIG['languages']['mergelang'], LANGPATH, ".lang.php" ) )
     ) {
         # Merge defined custom language file if it exists and is not the same as &LANG
-        i18n_merge( MERGELANG );
+        i18n_merge( $CONFIG['languages']['mergelang'] );
     }
 }

@@ -6,25 +6,34 @@
  * Contains definitions and basic functions that are commonly required across all files in the package
  */
 
-# Prepare basic definitions
-define( "SITE_NAME", "RewardingLoyalty");
-
 # Define Configuration Defaults
-defined( "LANGUAGE" ) ?: define( "LANGUAGE", "en-AU" );
-defined( "MERGELANG" ) ?: define( "MERGERLANG", false );
-defined( "FORMATXML" ) ?: define( "FORMATXML", true );
+require_once( "default_config.php" );
+$CONFIG_INI = parse_ini_file( $_SERVER['DOCUMENT_ROOT'] . "config.ini.php", true, INI_SCANNER_TYPED );
+foreach ( $CONFIG as $section => $values ) {
+    if ( array_key_exists($section, $CONFIG_INI) ) {
+        foreach ( $values as $key => $value ) {
+            if ( array_key_exists($key, $CONFIG_INI[$section]) ) {
+                $CONFIG[$section][$key] = $value;
+            }
+        }
+    }
+}
 
 # Define inclusion paths
-define("LANGPATH", '');
+define("ROOTPATH", $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR);
+define("INCPATH", ROOTPATH . "includes" . DIRECTORY_SEPARATOR);
+define("LANGPATH", ROOTPATH . "languages" . DIRECTORY_SEPARATOR);
+define("MODULESPATH", ROOTPATH . "modules" . DIRECTORY_SEPARATOR);
+define("THEMESPATH", ROOTPATH . "themes" . DIRECTORY_SEPARATOR);
 
 # Basic File Inclusions
-require_once ( "basic.php" );       // Basic Functions
-require_once ( "languages.php" );   // Language Management
+require_once ( INCPATH . "basic.php" );       // Basic Functions
+require_once ( INCPATH . "languages.php" );   // Language Management
 
 /**
  * Bad Stuff Protection
  */
-require_once ( "security_functions.php" );
+require_once ( INCPATH . "security_functions.php" );
 if ( version_compare( PHP_VERSION, "5" ) >= 0 ) {
     foreach ( $_GET as &$xss ) {
         $xss = antixss( $xss );
