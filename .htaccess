@@ -1,0 +1,69 @@
+##
+# MyMVC Framework Application
+# Apache HTTP Configuration File
+#
+# The following require certain allow overrides, if you are getting '500: Internal Server Error', comment out each line
+# one-by-one until the error no longer occurs. Can be resolved in Apache's 'httpd.conf to ensure security alternatives.
+##
+
+# Override and set Default Charset
+AddDefaultCharset UTF-8
+
+# Prevent directory listings
+Options -Indexes
+
+# Follow symbolic links - This is required on some hosts
+Options +FollowSymLinks
+
+# Set the default handler
+DirectoryIndex index.php
+
+# Block direct access to the XML files - They hold all the data! (When configured with XML Database)
+<FilesMatch "(?<!sitemap|browserconfig|crossdomain)\.xml$">
+    <IfModule !mode_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+    <IfModule mod_access_compat.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+    <IfModule mod_authz_core.c>
+        <IfModule !mod_access_compat.c>
+            Require all denied
+        </IfModule>
+    </IfModule>
+</FilesMatch>
+
+# Block direct access to the INI files - They hold all the configuration information
+#<FilesMatch "*.ini">
+#    <IfModule !mode_authz_core.c>
+#        Order allow,deny
+#        Deny from all
+#    </IfModule>
+#    <IfModule mod_access_compat.c>
+#        Order allow,deny
+#        Deny from all
+#    </IfModule>
+#    <IfModule mod_authz_core.c>
+#        <IfModule !mod_access_compat.c>
+#            Require all denied
+#        </IfModule>
+#    </IfModule>
+#</FilesMatch>
+
+# Handle rewrites for fancy urls
+<IfModule mod_rewrite.c>
+
+    # Tell PHP that the mod_rewrite module is ENABLED
+    SetEnv HTTP_MOD_REWRITE On
+    RewriteEngine on
+
+    # RewriteBase - Usually this is just '/', but replace
+    # with your subdirectory path if not in document root
+    RewriteBase /
+
+    RewriteCond %{REQUEST_URI} !\.(?:css|js|jpg|gif|png)$ [NC]
+    RewriteRule ^([a-zA-Z0-9\-_/]*)$ index.php?rp=$1
+
+</IfModule>
