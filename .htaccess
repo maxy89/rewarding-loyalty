@@ -1,5 +1,4 @@
 ##
-# MyMVC Framework Application
 # Apache HTTP Configuration File
 #
 # The following require certain allow overrides, if you are getting '500: Internal Server Error', comment out each line
@@ -35,35 +34,29 @@ DirectoryIndex index.php
     </IfModule>
 </FilesMatch>
 
-# Block direct access to the INI files - They hold all the configuration information
-#<FilesMatch "*.ini">
-#    <IfModule !mode_authz_core.c>
-#        Order allow,deny
-#        Deny from all
-#    </IfModule>
-#    <IfModule mod_access_compat.c>
-#        Order allow,deny
-#        Deny from all
-#    </IfModule>
-#    <IfModule mod_authz_core.c>
-#        <IfModule !mod_access_compat.c>
-#            Require all denied
-#        </IfModule>
-#    </IfModule>
-#</FilesMatch>
-
 # Handle rewrites for fancy urls
 <IfModule mod_rewrite.c>
-
-    # Tell PHP that the mod_rewrite module is ENABLED
-    SetEnv HTTP_MOD_REWRITE On
     RewriteEngine on
-
-    # RewriteBase - Usually this is just '/', but replace
-    # with your subdirectory path if not in document root
     RewriteBase /
 
-    RewriteCond %{REQUEST_URI} !\.(?:css|js|jpg|gif|png)$ [NC]
-    RewriteRule ^([a-zA-Z0-9\-_/]*)$ index.php?rp=$1
+    # Force HTTPS connections
+    #RewriteCond %{HTTPS} off
+    #RewriteRule ^(.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+    # Developers SubDomain remap
+    #RewriteCond %{HTTP_HOST} ^developers\.rewardingloyalty\.com\.au [NC]
+    #RewriteRule ^(.*) index.php/developers/$1 [L,NC]
+
+    # API SubDomain remap
+    #RewriteCond %{HTTP_HOST} ^api\.rewardingloyalty\.com\.au [NC]
+    #RewriteRule ^(.*) index.php/api/$1 [L,NC]
+
+    # Prepend 'www' when no subdomain
+    #RewriteCond %{HTTP_HOST} ^rewardingloyalty\.com\.au [NC]
+    #RewriteRule ^(.*) https://www.rewardingloyalty.com.au/$1 [L,R=301]
+
+    # Map the urls to CodeIgniter
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L,NC]
 </IfModule>
